@@ -41,13 +41,13 @@ public class Main {
     }
 
     // =========================
-    // UC3 + UC4: Enum for Units
+    // UC3 + UC4: Enum (Units)
     // =========================
     enum LengthUnit {
         FEET(1.0),
         INCH(1.0 / 12.0),
         YARDS(3.0),
-        CENTIMETERS(0.0328084); // 1 cm = 0.0328084 feet
+        CENTIMETERS(0.0328084);
 
         private final double factor;
 
@@ -61,7 +61,7 @@ public class Main {
     }
 
     // =========================
-    // UC3: Generic Quantity Class
+    // UC3: Quantity Class
     // =========================
     static class QuantityLength {
 
@@ -73,6 +73,7 @@ public class Main {
             this.unit = unit;
         }
 
+        // UC3 & UC4 equality
         @Override
         public boolean equals(Object obj) {
 
@@ -86,6 +87,31 @@ public class Main {
 
             return Double.compare(thisValue, otherValue) == 0;
         }
+
+        // =========================
+        // UC5: Conversion Method
+        // =========================
+        public static double convert(double value, LengthUnit source, LengthUnit target) {
+
+            if (!Double.isFinite(value)) {
+                throw new IllegalArgumentException("Invalid value");
+            }
+
+            if (source == null || target == null) {
+                throw new IllegalArgumentException("Unit cannot be null");
+            }
+
+            // Convert to base (feet)
+            double baseValue = source.toFeet(value);
+
+            // Convert to target
+            return baseValue / target.factor;
+        }
+
+        @Override
+        public String toString() {
+            return value + " " + unit;
+        }
     }
 
     // =========================
@@ -93,41 +119,47 @@ public class Main {
     // =========================
     public static void main(String[] args) {
 
+        // ===== UC1 =====
         System.out.println("=== UC1: Feet Equality ===");
         Feet f1 = new Feet(1.0);
         Feet f2 = new Feet(1.0);
         System.out.println("1.0 ft vs 1.0 ft → " + f1.equals(f2));
 
+        // ===== UC2 =====
         System.out.println("\n=== UC2: Inches Equality ===");
         Inches i1 = new Inches(1.0);
         Inches i2 = new Inches(1.0);
         System.out.println("1.0 inch vs 1.0 inch → " + i1.equals(i2));
 
+        // ===== UC3 =====
         System.out.println("\n=== UC3: Cross Unit Equality ===");
         QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
         QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
         System.out.println("1.0 ft vs 12 inch → " + q1.equals(q2));
 
+        // ===== UC4 =====
         System.out.println("\n=== UC4: Extended Units ===");
+        System.out.println("1 yard vs 3 feet → " +
+                new QuantityLength(1.0, LengthUnit.YARDS)
+                        .equals(new QuantityLength(3.0, LengthUnit.FEET)));
 
-        // Yard ↔ Feet
-        QuantityLength q3 = new QuantityLength(1.0, LengthUnit.YARDS);
-        QuantityLength q4 = new QuantityLength(3.0, LengthUnit.FEET);
-        System.out.println("1 yard vs 3 feet → " + q3.equals(q4));
+        System.out.println("1 cm vs 0.393701 inch → " +
+                new QuantityLength(1.0, LengthUnit.CENTIMETERS)
+                        .equals(new QuantityLength(0.393701, LengthUnit.INCH)));
 
-        // Yard ↔ Inch
-        QuantityLength q5 = new QuantityLength(1.0, LengthUnit.YARDS);
-        QuantityLength q6 = new QuantityLength(36.0, LengthUnit.INCH);
-        System.out.println("1 yard vs 36 inch → " + q5.equals(q6));
+        // ===== UC5 =====
+        System.out.println("\n=== UC5: Unit Conversion ===");
 
-        // CM ↔ CM
-        QuantityLength q7 = new QuantityLength(2.0, LengthUnit.CENTIMETERS);
-        QuantityLength q8 = new QuantityLength(2.0, LengthUnit.CENTIMETERS);
-        System.out.println("2 cm vs 2 cm → " + q7.equals(q8));
+        System.out.println("1 ft → inch = " +
+                QuantityLength.convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
 
-        // CM ↔ Inch
-        QuantityLength q9 = new QuantityLength(1.0, LengthUnit.CENTIMETERS);
-        QuantityLength q10 = new QuantityLength(0.393701, LengthUnit.INCH);
-        System.out.println("1 cm vs 0.393701 inch → " + q9.equals(q10));
+        System.out.println("3 yard → feet = " +
+                QuantityLength.convert(3.0, LengthUnit.YARDS, LengthUnit.FEET));
+
+        System.out.println("36 inch → yard = " +
+                QuantityLength.convert(36.0, LengthUnit.INCH, LengthUnit.YARDS));
+
+        System.out.println("1 cm → inch = " +
+                QuantityLength.convert(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCH));
     }
 }
