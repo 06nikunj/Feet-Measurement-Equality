@@ -49,19 +49,50 @@ public class Main {
     }
 
     // =========================
-    // Helper Methods (IMPORTANT)
+    // UC3: Enum (Units)
     // =========================
+    enum LengthUnit {
+        FEET(1.0),
+        INCH(1.0 / 12.0);
 
-    public static boolean compareFeet(double v1, double v2) {
-        Feet f1 = new Feet(v1);
-        Feet f2 = new Feet(v2);
-        return f1.equals(f2);
+        private final double factor;
+
+        LengthUnit(double factor) {
+            this.factor = factor;
+        }
+
+        public double toFeet(double value) {
+            return value * factor;
+        }
     }
 
-    public static boolean compareInches(double v1, double v2) {
-        Inches i1 = new Inches(v1);
-        Inches i2 = new Inches(v2);
-        return i1.equals(i2);
+    // =========================
+    // UC3: Quantity Class (DRY)
+    // =========================
+    static class QuantityLength {
+
+        private final double value;
+        private final LengthUnit unit;
+
+        public QuantityLength(double value, LengthUnit unit) {
+            this.value = value;
+            this.unit = unit;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+
+            if (this == obj) return true;
+
+            if (obj == null || getClass() != obj.getClass()) return false;
+
+            QuantityLength other = (QuantityLength) obj;
+
+            double thisValue = unit.toFeet(value);
+            double otherValue = other.unit.toFeet(other.value);
+
+            return Double.compare(thisValue, otherValue) == 0;
+        }
     }
 
     // =========================
@@ -69,12 +100,19 @@ public class Main {
     // =========================
     public static void main(String[] args) {
 
-        // Feet comparison
-        System.out.println("Input: 1.0 ft and 1.0 ft");
-        System.out.println("Output: Equal (" + compareFeet(1.0, 1.0) + ")");
+        System.out.println("=== UC1: Feet Equality ===");
+        Feet f1 = new Feet(1.0);
+        Feet f2 = new Feet(1.0);
+        System.out.println("1.0 ft vs 1.0 ft → " + f1.equals(f2));
 
-        // Inches comparison
-        System.out.println("\nInput: 1.0 inch and 1.0 inch");
-        System.out.println("Output: Equal (" + compareInches(1.0, 1.0) + ")");
+        System.out.println("\n=== UC2: Inches Equality ===");
+        Inches i1 = new Inches(1.0);
+        Inches i2 = new Inches(1.0);
+        System.out.println("1.0 inch vs 1.0 inch → " + i1.equals(i2));
+
+        System.out.println("\n=== UC3: Cross Unit Equality ===");
+        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
+        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
+        System.out.println("1.0 ft vs 12.0 inch → " + q1.equals(q2));
     }
 }
