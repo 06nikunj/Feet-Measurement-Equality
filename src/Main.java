@@ -7,42 +7,74 @@ public class Main {
 
         private final double value;
 
-        // Constructor
         public Feet(double value) {
             this.value = value;
         }
 
-        // Override equals()
         @Override
         public boolean equals(Object obj) {
 
-            // Same reference (Reflexive)
             if (this == obj) return true;
 
-            // Null check + type check
             if (obj == null || this.getClass() != obj.getClass()) return false;
 
-            // Cast
             Feet other = (Feet) obj;
 
-            // Compare values
             return Double.compare(this.value, other.value) == 0;
         }
     }
 
     // =========================
-    // MAIN METHOD (UC1 FLOW)
+    // UC2: Inches Class
+    // =========================
+    static class Inches {
+
+        private final double value;
+
+        public Inches(double value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+
+            if (this == obj) return true;
+
+            if (obj == null || this.getClass() != obj.getClass()) return false;
+
+            Inches other = (Inches) obj;
+
+            return Double.compare(this.value, other.value) == 0;
+        }
+    }
+
+    // =========================
+    // Helper Methods (IMPORTANT)
+    // =========================
+
+    public static boolean compareFeet(double v1, double v2) {
+        Feet f1 = new Feet(v1);
+        Feet f2 = new Feet(v2);
+        return f1.equals(f2);
+    }
+
+    public static boolean compareInches(double v1, double v2) {
+        Inches i1 = new Inches(v1);
+        Inches i2 = new Inches(v2);
+        return i1.equals(i2);
+    }
+
+    // =========================
+    // MAIN METHOD
     // =========================
     public static void main(String[] args) {
 
-        // Input values
-        Feet f1 = new Feet(1.0);
-        Feet f2 = new Feet(1.0);
-
+        // Feet comparison
         System.out.println("Input: 1.0 ft and 1.0 ft");
+        System.out.println("Output: Equal (" + compareFeet(1.0, 1.0) + ")");
 
-        boolean result = f1.equals(f2);
-
-        System.out.println("Output: Equal (" + result + ")");
+        // Inches comparison
+        System.out.println("\nInput: 1.0 inch and 1.0 inch");
+        System.out.println("Output: Equal (" + compareInches(1.0, 1.0) + ")");
     }
 }
