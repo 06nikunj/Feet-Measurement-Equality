@@ -126,11 +126,6 @@ public class Main {
             double sum = q1.unit.toBase(q1.value) + q2.unit.toBase(q2.value);
             return new QuantityLength(q1.unit.fromBase(sum), q1.unit);
         }
-
-        @Override
-        public String toString() {
-            return value + " " + unit;
-        }
     }
 
     // =========================
@@ -156,7 +151,7 @@ public class Main {
     }
 
     // =========================
-    // UC10: Generic Class
+    // UC10: Generic Quantity
     // =========================
     static class Quantity<U extends IMeasurable> {
         private final double value;
@@ -191,32 +186,88 @@ public class Main {
     }
 
     // =========================
-    // UC11: PalindromeChecker (OOP)
+    // UC11: Palindrome Checker
     // =========================
     static class PalindromeChecker {
-
         public boolean checkPalindrome(String input) {
-
             if (input == null) return false;
 
-            // remove spaces and lower case
             input = input.replaceAll("\\s+", "").toLowerCase();
 
             Stack<Character> stack = new Stack<>();
 
-            // push all characters
             for (char c : input.toCharArray()) {
                 stack.push(c);
             }
 
-            // compare
             for (char c : input.toCharArray()) {
-                if (c != stack.pop()) {
-                    return false;
-                }
+                if (c != stack.pop()) return false;
             }
 
             return true;
+        }
+    }
+
+    // =========================
+    // UC12: Strategy Pattern
+    // =========================
+    interface PalindromeStrategy {
+        boolean check(String input);
+    }
+
+    static class StackStrategy implements PalindromeStrategy {
+        public boolean check(String input) {
+            if (input == null) return false;
+
+            input = input.replaceAll("\\s+", "").toLowerCase();
+
+            Stack<Character> stack = new Stack<>();
+
+            for (char c : input.toCharArray()) {
+                stack.push(c);
+            }
+
+            for (char c : input.toCharArray()) {
+                if (c != stack.pop()) return false;
+            }
+
+            return true;
+        }
+    }
+
+    static class DequeStrategy implements PalindromeStrategy {
+        public boolean check(String input) {
+            if (input == null) return false;
+
+            input = input.replaceAll("\\s+", "").toLowerCase();
+
+            Deque<Character> dq = new ArrayDeque<>();
+
+            for (char c : input.toCharArray()) {
+                dq.addLast(c);
+            }
+
+            while (dq.size() > 1) {
+                if (dq.removeFirst() != dq.removeLast()) return false;
+            }
+
+            return true;
+        }
+    }
+
+    static class PalindromeCheckerUC12 {
+        private PalindromeStrategy strategy;
+
+        public PalindromeCheckerUC12(PalindromeStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public void setStrategy(PalindromeStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public boolean checkPalindrome(String input) {
+            return strategy.check(input);
         }
     }
 
@@ -225,36 +276,34 @@ public class Main {
     // =========================
     public static void main(String[] args) {
 
-        // UC1
-        System.out.println("UC1 → " + new Feet(1).equals(new Feet(1)));
-
-        // UC2
-        System.out.println("UC2 → " + new Inches(1).equals(new Inches(1)));
+        // UC1–UC2
+        System.out.println("Feet Equal → " + new Feet(1).equals(new Feet(1)));
+        System.out.println("Inches Equal → " + new Inches(1).equals(new Inches(1)));
 
         // UC3–UC8
         QuantityLength l1 = new QuantityLength(1, LengthUnit.FEET);
         QuantityLength l2 = new QuantityLength(12, LengthUnit.INCH);
-
         System.out.println("Length Equal → " + l1.equals(l2));
-        System.out.println("Length Convert → " + l1.convertTo(LengthUnit.INCH));
 
         // UC9
         QuantityWeight w1 = new QuantityWeight(1, WeightUnit.KILOGRAM);
         QuantityWeight w2 = new QuantityWeight(1000, WeightUnit.GRAM);
-
         System.out.println("Weight Equal → " + w1.equals(w2));
 
         // UC10
         Quantity<LengthUnit> g1 = new Quantity<>(1, LengthUnit.FEET);
         Quantity<LengthUnit> g2 = new Quantity<>(12, LengthUnit.INCH);
-
-        System.out.println("UC10 Equal → " + g1.equals(g2));
+        System.out.println("Generic Equal → " + g1.equals(g2));
 
         // UC11
-        PalindromeChecker checker = new PalindromeChecker();
+        PalindromeChecker p = new PalindromeChecker();
+        System.out.println("madam → " + p.checkPalindrome("madam"));
 
-        System.out.println("madam → " + checker.checkPalindrome("madam"));
-        System.out.println("hello → " + checker.checkPalindrome("hello"));
-        System.out.println("race car → " + checker.checkPalindrome("race car"));
+        // UC12
+        PalindromeCheckerUC12 checker = new PalindromeCheckerUC12(new StackStrategy());
+        System.out.println("Stack → racecar → " + checker.checkPalindrome("racecar"));
+
+        checker.setStrategy(new DequeStrategy());
+        System.out.println("Deque → hello → " + checker.checkPalindrome("hello"));
     }
 }
