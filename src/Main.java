@@ -1,8 +1,5 @@
 import java.util.*;
 
-// =========================
-// MAIN CLASS
-// =========================
 public class Main {
 
     // =========================
@@ -10,10 +7,7 @@ public class Main {
     // =========================
     static class Feet {
         private final double value;
-
-        public Feet(double value) {
-            this.value = value;
-        }
+        public Feet(double value) { this.value = value; }
 
         @Override
         public boolean equals(Object obj) {
@@ -29,10 +23,7 @@ public class Main {
     // =========================
     static class Inches {
         private final double value;
-
-        public Inches(double value) {
-            this.value = value;
-        }
+        public Inches(double value) { this.value = value; }
 
         @Override
         public boolean equals(Object obj) {
@@ -62,38 +53,22 @@ public class Main {
     // UC3–UC8: Length Enum
     // =========================
     enum LengthUnit implements IMeasurable {
-        FEET(1.0),
-        INCH(1.0 / 12),
-        YARDS(3.0),
-        CENTIMETERS(0.0328084);
+        FEET(1.0), INCH(1.0/12), YARDS(3.0), CENTIMETERS(0.0328084);
 
         private final double factor;
-
-        LengthUnit(double factor) {
-            this.factor = factor;
-        }
-
-        public double getFactor() {
-            return factor;
-        }
+        LengthUnit(double factor) { this.factor = factor; }
+        public double getFactor() { return factor; }
     }
 
     // =========================
     // UC9: Weight Enum
     // =========================
     enum WeightUnit implements IMeasurable {
-        KILOGRAM(1.0),
-        GRAM(0.001);
+        KILOGRAM(1.0), GRAM(0.001);
 
         private final double factor;
-
-        WeightUnit(double factor) {
-            this.factor = factor;
-        }
-
-        public double getFactor() {
-            return factor;
-        }
+        WeightUnit(double factor) { this.factor = factor; }
+        public double getFactor() { return factor; }
     }
 
     // =========================
@@ -111,10 +86,7 @@ public class Main {
         @Override
         public boolean equals(Object obj) {
             QuantityLength other = (QuantityLength) obj;
-            return Double.compare(
-                    unit.toBase(value),
-                    other.unit.toBase(other.value)
-            ) == 0;
+            return Double.compare(unit.toBase(value), other.unit.toBase(other.value)) == 0;
         }
 
         public QuantityLength convertTo(LengthUnit target) {
@@ -143,15 +115,12 @@ public class Main {
         @Override
         public boolean equals(Object obj) {
             QuantityWeight other = (QuantityWeight) obj;
-            return Double.compare(
-                    unit.toBase(value),
-                    other.unit.toBase(other.value)
-            ) == 0;
+            return Double.compare(unit.toBase(value), other.unit.toBase(other.value)) == 0;
         }
     }
 
     // =========================
-    // UC10: Generic Quantity
+    // UC10: Generic Class
     // =========================
     static class Quantity<U extends IMeasurable> {
         private final double value;
@@ -175,13 +144,8 @@ public class Main {
         @Override
         public boolean equals(Object obj) {
             Quantity<?> other = (Quantity<?>) obj;
-
             if (unit.getClass() != other.unit.getClass()) return false;
-
-            return Double.compare(
-                    unit.toBase(value),
-                    other.unit.toBase(other.value)
-            ) == 0;
+            return Double.compare(unit.toBase(value), other.unit.toBase(other.value)) == 0;
         }
     }
 
@@ -191,19 +155,14 @@ public class Main {
     static class PalindromeChecker {
         public boolean checkPalindrome(String input) {
             if (input == null) return false;
-
             input = input.replaceAll("\\s+", "").toLowerCase();
 
             Stack<Character> stack = new Stack<>();
-
-            for (char c : input.toCharArray()) {
-                stack.push(c);
-            }
+            for (char c : input.toCharArray()) stack.push(c);
 
             for (char c : input.toCharArray()) {
                 if (c != stack.pop()) return false;
             }
-
             return true;
         }
     }
@@ -218,19 +177,14 @@ public class Main {
     static class StackStrategy implements PalindromeStrategy {
         public boolean check(String input) {
             if (input == null) return false;
-
             input = input.replaceAll("\\s+", "").toLowerCase();
 
             Stack<Character> stack = new Stack<>();
-
-            for (char c : input.toCharArray()) {
-                stack.push(c);
-            }
+            for (char c : input.toCharArray()) stack.push(c);
 
             for (char c : input.toCharArray()) {
                 if (c != stack.pop()) return false;
             }
-
             return true;
         }
     }
@@ -238,19 +192,14 @@ public class Main {
     static class DequeStrategy implements PalindromeStrategy {
         public boolean check(String input) {
             if (input == null) return false;
-
             input = input.replaceAll("\\s+", "").toLowerCase();
 
             Deque<Character> dq = new ArrayDeque<>();
-
-            for (char c : input.toCharArray()) {
-                dq.addLast(c);
-            }
+            for (char c : input.toCharArray()) dq.addLast(c);
 
             while (dq.size() > 1) {
                 if (dq.removeFirst() != dq.removeLast()) return false;
             }
-
             return true;
         }
     }
@@ -272,28 +221,47 @@ public class Main {
     }
 
     // =========================
+    // UC13: Performance Comparison
+    // =========================
+    static void performanceTest(String input) {
+
+        PalindromeStrategy stack = new StackStrategy();
+        PalindromeStrategy deque = new DequeStrategy();
+
+        long start1 = System.nanoTime();
+        boolean r1 = stack.check(input);
+        long end1 = System.nanoTime();
+
+        long start2 = System.nanoTime();
+        boolean r2 = deque.check(input);
+        long end2 = System.nanoTime();
+
+        System.out.println("\n=== UC13 Performance ===");
+        System.out.println("Stack Result: " + r1 + " | Time: " + (end1 - start1) + " ns");
+        System.out.println("Deque Result: " + r2 + " | Time: " + (end2 - start2) + " ns");
+    }
+
+    // =========================
     // MAIN METHOD
     // =========================
     public static void main(String[] args) {
 
         // UC1–UC2
-        System.out.println("Feet Equal → " + new Feet(1).equals(new Feet(1)));
-        System.out.println("Inches Equal → " + new Inches(1).equals(new Inches(1)));
+        System.out.println(new Feet(1).equals(new Feet(1)));
+        System.out.println(new Inches(1).equals(new Inches(1)));
 
         // UC3–UC8
         QuantityLength l1 = new QuantityLength(1, LengthUnit.FEET);
         QuantityLength l2 = new QuantityLength(12, LengthUnit.INCH);
-        System.out.println("Length Equal → " + l1.equals(l2));
+        System.out.println(l1.equals(l2));
 
         // UC9
-        QuantityWeight w1 = new QuantityWeight(1, WeightUnit.KILOGRAM);
-        QuantityWeight w2 = new QuantityWeight(1000, WeightUnit.GRAM);
-        System.out.println("Weight Equal → " + w1.equals(w2));
+        System.out.println(new QuantityWeight(1, WeightUnit.KILOGRAM)
+                .equals(new QuantityWeight(1000, WeightUnit.GRAM)));
 
         // UC10
-        Quantity<LengthUnit> g1 = new Quantity<>(1, LengthUnit.FEET);
-        Quantity<LengthUnit> g2 = new Quantity<>(12, LengthUnit.INCH);
-        System.out.println("Generic Equal → " + g1.equals(g2));
+        System.out.println(new Quantity<>(1, LengthUnit.FEET)
+                .equals(new Quantity<>(12, LengthUnit.INCH)));
 
         // UC11
         PalindromeChecker p = new PalindromeChecker();
@@ -305,5 +273,8 @@ public class Main {
 
         checker.setStrategy(new DequeStrategy());
         System.out.println("Deque → hello → " + checker.checkPalindrome("hello"));
+
+        // UC13
+        performanceTest("racecar");
     }
 }
